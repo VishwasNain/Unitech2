@@ -61,6 +61,11 @@ const CategoryCard = styled(Card)(({ theme }) => ({
     boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
   },
   cursor: 'pointer',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+    minWidth: 'unset',
+    width: '100%',
+  },
 }));
 
 const FeatureCard = styled(Paper)(({ theme }) => ({
@@ -77,14 +82,24 @@ const FeatureCard = styled(Paper)(({ theme }) => ({
     transform: 'translateY(-5px)',
     boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
   },
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: theme.spacing(1),
+    padding: theme.spacing(2),
+  },
 }));
 
-const HeroSection = styled(Box)({
+const HeroSection = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
   padding: '80px 0',
   borderRadius: '20px',
   marginBottom: '40px',
-});
+  [theme.breakpoints.down('sm')]: {
+    padding: '40px 0 24px 0',
+    marginBottom: '24px',
+  },
+}));
 
 const TestimonialCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -101,12 +116,19 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
   },
   borderRadius: '20px',
   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(2),
+    borderRadius: '10px',
+  },
 }));
 
 const TestimonialSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
   backgroundColor: 'rgba(255, 255, 255, 0.03)',
   backdropFilter: 'blur(10px)',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(4, 0),
+  },
 }));
 
 const GradientText = styled(Typography)({
@@ -349,15 +371,6 @@ const Home = () => {
       </Fade>
 
       <Fade in={true} timeout={1200}>
-        <div>
-          <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
-            <Typography variant="h2" gutterBottom>
-              Shop by Category
-            </Typography>
-            <Grid container spacing={3}>
-              {categories.map((category, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <RouterLink to={category.path} style={{ textDecoration: 'none', color: 'inherit' }}>
                     {category.label === 'Laptops' ? (
                       <Box
                         sx={{
@@ -563,6 +576,7 @@ const Home = () => {
                   gap: 2,
                   maxWidth: 500,
                   mx: 'auto',
+                  width: '100%',
                 }}
                 onSubmit={e => e.preventDefault()}
               >
@@ -571,9 +585,23 @@ const Home = () => {
                   required
                   placeholder="Enter your email"
                   size="medium"
-                  sx={{ flex: 1, bgcolor: 'white', borderRadius: 2 }}
+                  sx={{
+                    flex: 1,
+                    bgcolor: 'white',
+                    borderRadius: 2,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
                 />
-                <Button type="submit" variant="contained" color="primary" size="large" sx={{ minWidth: 140 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  sx={{
+                    minWidth: 140,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
                   Subscribe
                 </Button>
               </Box>
@@ -586,10 +614,18 @@ const Home = () => {
         <div>
           <TestimonialSection>
             <Container maxWidth="lg">
-              <Typography variant="h2" gutterBottom sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{
+                  textAlign: 'center',
+                  mb: 6,
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                }}
+              >
                 What Our Customers Say
               </Typography>
-              <Grid container spacing={4}>
+              <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {testimonials.map((testimonial, index) => (
                   <Grid item xs={12} sm={6} key={index}>
                     <TestimonialCard>
@@ -628,13 +664,22 @@ const Home = () => {
             <Typography variant="h5" sx={{ textAlign: 'center', mb: 3, color: 'text.secondary', letterSpacing: 2 }}>
               Trusted by Top Brands
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: { xs: 2, sm: 5 }, flexWrap: 'wrap' }}>
-              <Box component="img" src="/images/HP Logo.png " alt="HP" sx={{ height: 40, opacity: 0.8 }} />
-              <Box component="img" src="/images/Dell Logo.png" alt="Dell" sx={{ height: 34, opacity: 0.8 }} />
-              <Box component="img" src="/images/Lenovo Logo.png" alt="Lenovo" sx={{ height: 32, opacity: 0.8 }} />
-              <Box component="img" src="/images/Apple Logo.png" alt="Apple" sx={{ height: 36, opacity: 0.8 }} />
-              <Box component="img" src="/images/ASUS Logo.png" alt="Asus" sx={{ height: 28, opacity: 0.8 }} />
-              <Box component="img" src="/images/Acer Logo.png" alt="Acer" sx={{ height: 30, opacity: 0.8 }} />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: { xs: 2, sm: 5 },
+                flexWrap: 'wrap',
+                mt: 2,
+              }}
+            >
+              <Box component="img" src="/images/HP Logo.png " alt="HP" sx={{ height: { xs: 28, sm: 40 }, maxWidth: '80px', opacity: 0.8, width: 'auto' }} />
+              <Box component="img" src="/images/Dell Logo.png" alt="Dell" sx={{ height: { xs: 24, sm: 34 }, maxWidth: '70px', opacity: 0.8, width: 'auto' }} />
+              <Box component="img" src="/images/Lenovo Logo.png" alt="Lenovo" sx={{ height: { xs: 22, sm: 32 }, maxWidth: '70px', opacity: 0.8, width: 'auto' }} />
+              <Box component="img" src="/images/Apple Logo.png" alt="Apple" sx={{ height: { xs: 26, sm: 36 }, maxWidth: '70px', opacity: 0.8, width: 'auto' }} />
+              <Box component="img" src="/images/ASUS Logo.png" alt="Asus" sx={{ height: { xs: 18, sm: 28 }, maxWidth: '60px', opacity: 0.8, width: 'auto' }} />
+              <Box component="img" src="/images/Acer Logo.png" alt="Acer" sx={{ height: { xs: 20, sm: 30 }, maxWidth: '60px', opacity: 0.8, width: 'auto' }} />
             </Box>
           </Container>
         </div>
