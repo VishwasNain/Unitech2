@@ -371,6 +371,16 @@ const Home = () => {
       </Fade>
 
       <Fade in={true} timeout={1200}>
+        <div>
+          {/* Categories Section */}
+          <Container maxWidth="lg" sx={{ my: 8 }}>
+            <Typography variant="h2" gutterBottom sx={{ textAlign: 'center' }}>
+              Shop By Category
+            </Typography>
+            <Grid container spacing={4}>
+              {categories.map((category, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <RouterLink to={category.path} style={{ textDecoration: 'none' }}>
                     {category.label === 'Laptops' ? (
                       <Box
                         sx={{
