@@ -70,21 +70,21 @@ const Login = () => {
     <Container maxWidth="sm">
       <Box sx={{ mt: 8, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-          <Typography component="h1" variant="h4" align="center" gutterBottom>
+          <Typography component="h1" variant="h4" align="center" gutterBottom sx={{ color: 'black' }}>
             Welcome Back
           </Typography>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph sx={{ color: 'black' }}>
             Sign in to your account
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 2, color: 'black' }}>
                 {error}
               </Alert>
             )}
 
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -99,7 +99,7 @@ const Login = () => {
               helperText={error && error.includes('email') ? error : ''}
             />
             
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -128,7 +128,7 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, color: 'black' }}
               disabled={loading || !formData.email || !formData.password}
             >
               {loading ? (
@@ -143,15 +143,15 @@ const Login = () => {
             <Button
               fullWidth
               variant="outlined"
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, color: 'black' }}
               onClick={() => navigate('/forgot-password')}
             >
               Forgot Password?
             </Button>
 
-            <Typography align="center">
+            <Typography align="center" sx={{ color: 'black' }}>
               Don't have an account?{' '}
-              <Link href="/register" variant="body2">
+              <Link href="/register" variant="body2" sx={{ color: 'black' }}>
                 Sign Up
               </Link>
             </Typography>

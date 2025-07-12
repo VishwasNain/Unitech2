@@ -1,57 +1,30 @@
+// src/components/Navbar.js
 import React, { useState } from 'react';
 import {
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
   Box,
   IconButton,
   InputBase,
   Badge,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  Grid,
-  useTheme,
   Popover,
   Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CircularProgress,
+  Divider,
+  useTheme,
   styled,
-  CardMedia,
-  Rating,
-  Chip,
-  Avatar,
-  ListItemAvatar,
-  ListItemIcon
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   ShoppingCart as ShoppingCartIcon,
   Search as SearchIcon,
-  Person as PersonIcon,
-  ShoppingCartOutlined as ShoppingCartOutlinedIcon,
-  PersonOutline as PersonOutlineIcon,
-  SearchOutlined as SearchOutlinedIcon,
-  Remove as RemoveIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  ShoppingCartCheckout as ShoppingCartCheckoutIcon,
-  ExitToApp as LogoutIcon,
-  Login as LoginIcon,
-  Person as UserIcon,
-  Dashboard as DashboardIcon,
-  Receipt as ReceiptIcon,
-  Favorite as FavoriteIcon,
+  HomeOutlined as HomeIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/UserContext';
-import { useNavigate, useLocation } from 'react-router-dom';
 import UserMenu from './UserMenu';
 
 const Search = styled('div')(({ theme }) => ({
@@ -95,29 +68,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { cartItems, totalPrice } = useCart();
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchAnchor, setSearchAnchor] = useState(null);
-  const [cartAnchor, setCartAnchor] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [cartAnchor, setCartAnchor] = useState(null);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleSearchClick = (event) => {
-    setSearchAnchor(event.currentTarget);
-  };
-
-  const handleSearchClose = () => {
-    setSearchAnchor(null);
-  };
+  // Mobile search popover state
+  const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
+  const [searchAnchorEl, setSearchAnchorEl] = useState(null);
 
   const handleCartClick = (event) => {
     setCartAnchor(event.currentTarget);
@@ -127,156 +88,169 @@ const Navbar = () => {
     setCartAnchor(null);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
+  // For mobile, open popover for search
+  const handleMobileSearchIconClick = (event) => {
+    setSearchAnchorEl(event.currentTarget);
+    setSearchPopoverOpen(true);
+  };
+  const handleMobileSearchClose = () => {
+    setSearchPopoverOpen(false);
+    setSearchAnchorEl(null);
+  };
+  const handleMobileSearchSubmit = () => {
+    if (searchTerm.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
+      handleMobileSearchClose();
+    }
+  };
+  const handleMobileSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleMobileSearchSubmit();
+    }
+  };
+
+  const handleSearchClick = () => {
     if (searchTerm.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
     }
-    handleSearchClose();
   };
 
   const handleSearchKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSearchSubmit(e);
+      handleSearchClick();
     }
   };
 
-  const menuItems = [
-    { text: 'Home', path: '/' },
-    { text: 'Products', path: '/products' },
-    { text: 'Blog', path: '/blog' },
-  ];
-
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{
-        background: 'rgba(0, 0, 0, 0.8)',
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-        zIndex: theme.zIndex.drawer + 1,
+      <AppBar position="fixed" sx={{
+        background: 'rgba(15, 15, 20, 0.85)',
+        backdropFilter: 'blur(18px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(18px) saturate(160%)',
+        boxShadow: '0 2px 12px 0 rgba(36,81,171,0.10)',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        zIndex: theme.zIndex.drawer + 10,
+        left: 0,
+        top: 0,
+        width: '100vw',
+        transition: 'background 0.3s, backdrop-filter 0.3s',
       }}>
-        <Toolbar>
+        <Toolbar sx={{ px: isMobile ? 1 : 3 }}>
+
+          {/* Home Icon + Brand */}
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label="Go to homepage"
+            onClick={() => navigate('/')}
+            sx={{ mr: 1 }}
             edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
           >
-            <MenuIcon />
+            <HomeIcon fontSize={isMobile ? "medium" : "large"} />
           </IconButton>
           <Typography
             variant="h6"
-            component="div"
+            noWrap
+            onClick={() => navigate('/')}
             sx={{
               flexGrow: 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              '& img': {
-                height: 40,
-                width: 40,
-                objectFit: 'contain',
-              },
               cursor: 'pointer',
-              '&:hover': {
-                textDecoration: 'none',
-              },
+              fontSize: isMobile ? '1rem' : '1.25rem',
+              whiteSpace: 'nowrap',
             }}
-            onClick={() => navigate('/')}
           >
             UNITECH COMPUTERS
           </Typography>
 
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search products..."
-              inputProps={{ 'aria-label': 'search' }}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={handleSearchKeyPress}
-            />
-          </Search>
+          {/* Search (Desktop Only) */}
+          {!isMobile && (
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
+              />
+            </Search>
+          )}
 
-          <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              onClick={handleCartClick}
-            >
+          {/* Icons */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {isMobile && (
+              <>
+                <IconButton color="inherit" onClick={handleMobileSearchIconClick}>
+                  <SearchIcon />
+                </IconButton>
+                <Popover
+                  open={searchPopoverOpen}
+                  anchorEl={searchAnchorEl}
+                  onClose={handleMobileSearchClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                  PaperProps={{ sx: { p: 2, width: '90vw', maxWidth: 350 } }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <InputBase
+                      autoFocus
+                      fullWidth
+                      placeholder="Search products..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      onKeyPress={handleMobileSearchKeyPress}
+                      sx={{ bgcolor: 'rgba(0,0,0,0.04)', px: 1, borderRadius: 2 }}
+                    />
+                    <IconButton color="primary" onClick={handleMobileSearchSubmit}>
+                      <SearchIcon />
+                    </IconButton>
+                  </Box>
+                </Popover>
+              </>
+            )}
+            <IconButton color="inherit" onClick={handleCartClick}>
               <Badge badgeContent={cartItems.length} color="error">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
-
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              onClick={handleSearchClick}
-            >
-              <SearchIcon />
-            </IconButton>
-
             <UserMenu user={user} isLoggedIn={isLoggedIn} logout={logout} />
           </Box>
         </Toolbar>
       </AppBar>
 
+      {/* Cart Popover */}
       <Popover
         open={Boolean(cartAnchor)}
         anchorEl={cartAnchor}
         onClose={handleCartClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Paper sx={{ p: 2, width: 300 }}>
-          <Typography variant="h6" gutterBottom>
-            Shopping Cart
-          </Typography>
+          <Typography variant="h6" gutterBottom>Shopping Cart</Typography>
           <Divider sx={{ mb: 2 }} />
-          
           {cartItems.map((item) => (
-            <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography variant="body1" sx={{ flexGrow: 1 }}>
-                {item.name}
-              </Typography>
-              <Typography variant="body1">
-                {item.quantity} x ${item.price}
-              </Typography>
+            <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography>{item.name}</Typography>
+              <Typography>{item.quantity} x ₹{item.price}</Typography>
             </Box>
           ))}
-
           <Divider sx={{ my: 2 }} />
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h6">Total:</Typography>
-            <Typography variant="h6">${totalPrice.toFixed(2)}</Typography>
+            <Typography variant="h6">₹{totalPrice.toFixed(2)}</Typography>
           </Box>
-
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
-            onClick={() => {
-              handleCartClose();
-              navigate('/cart');
-            }}
-          >
+          <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={() => {
+            handleCartClose();
+            navigate('/cart');
+          }}>
             View Cart
           </Button>
         </Paper>
       </Popover>
+
+      {/* Spacer to prevent content jump due to fixed navbar */}
+      <Box sx={{ height: { xs: 56, sm: 64, md: 72 } }} />
     </Box>
   );
 };

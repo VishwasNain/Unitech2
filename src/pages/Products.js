@@ -31,17 +31,39 @@ import {
   InputAdornment,
   styled,
   useTheme,
-  Fade
+  Fade,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
+
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LaptopMac from '@mui/icons-material/LaptopMac';
-import DesktopWindows from '@mui/icons-material/DesktopWindows';
+import MemoryIcon from '@mui/icons-material/Memory';
+import StorageIcon from '@mui/icons-material/Storage';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ReplayIcon from '@mui/icons-material/Replay';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ShareIcon from '@mui/icons-material/Share';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LaptopMacIcon from '@mui/icons-material/LaptopMac';
+import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/currency';
+
+// TODO: For each Windows laptop in your product data, add a configOptions property like:
+// configOptions: {
+//   ram: [{ value: '4GB', label: '4GB', price: 0 }, ...],
+//   storage: [...],
+//   processor: [...],
+// }
+// Then, only those laptops will show configurable options in the dialog.
+
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -117,13 +139,35 @@ const Products = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
+// Track configuration for each product by ID
+const [configSelections, setConfigSelections] = useState({});
+
+
+// Handle selection
+const handleConfigChange = (productId, field, value) => {
+  setConfigSelections(prev => {
+    const prevConfig = prev[productId] || {};
+    return {
+      ...prev,
+      [productId]: {
+        ...prevConfig,
+        [field]: value
+      }
+    };
+  });
+};
+
   const [searchTerm, setSearchTerm] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [selectedCondition, setSelectedCondition] = useState('all');
+  const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [openDetails, setOpenDetails] = useState(false);
   const { cartItems, addToCart } = useCart();
   const theme = useTheme();
+
+  const [zoomImgIdx, setZoomImgIdx] = useState(null);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -134,7 +178,7 @@ const Products = () => {
     laptops: [
       {
         id: 1,
-        name: "Apple MacBook Air M4 14inch",
+        name: "Apple MacBook Air M4 14inch (Refurbished)",
         brand: "Apple",
         model: "M4 Air",
         description: "14-inch Retina display, M4 chip, 16GB RAM, 256GB SSD",
@@ -142,6 +186,12 @@ const Products = () => {
         category: "laptops",
         condition: "new",
         image: '/images/Apple m4 air.jpeg',
+        images: [
+          '/images/Apple m4 air.jpeg',
+          '/images/M4 air (2).jpg',
+          '/images/M4 air (3).jpg',
+          '/images/M4 air (4).jpg',
+        ],
         rating: 4.7,
         specs: {
           processor: "Apple M4",
@@ -154,9 +204,10 @@ const Products = () => {
           color: "Space Gray"
         }
       },
+      
       {
         id: 2,
-        name: "Apple MacBook pro A1989 with Touch Bar",
+        name: "Apple MacBook pro A1989 with Touch Bar (Refurbished)",
         brand: "Apple",
         model: "A1989",
         description: "16-inch Retina display, Intel Core i5, 8GB RAM, 256GB SSD",
@@ -164,6 +215,11 @@ const Products = () => {
         category: "laptops",
         condition: "new",
         image: '/images/A1989.jpg',
+        images: [
+          '/images/A1989.jpg',
+          '/images/A1989 (3).jpg',
+          '/images/A1989 (4).jpg',
+        ],
         rating: 4.8,
         specs: {
           processor: "Intel Core i5",
@@ -178,7 +234,7 @@ const Products = () => {
       },
       {
         id: 3,
-        name: "Apple MacBook pro M1 (2021)",
+        name: "Apple MacBook pro M1 (2021) (Refurbished)",
         brand: "Apple",
         model: "M1 Pro",
         description: "16-inch Retina display, M1 chip, 32GB RAM, 512GB SSD",
@@ -186,6 +242,10 @@ const Products = () => {
         category: "laptops",
         condition: "new,used",
         image: '/images/m1 pro 16inch.jpg',
+        images: [
+          '/images/m1 pro 16inch.jpg',
+          '/images/M1 pro (3).jpg',
+        ],
         rating: 4.8,
         specs: {
           processor: "Apple M1",
@@ -200,7 +260,7 @@ const Products = () => {
       },
       {
         id: 4,
-        name: "Apple MacBook M3 Pro",
+        name: "Apple MacBook M3 Pro (Refurbished)",
         brand: "Apple",
         model: "M3 Pro",
         description: "16-inch Retina display, M3 chip, 18GB RAM, 512GB SSD",
@@ -208,6 +268,11 @@ const Products = () => {
         category: "laptops",
         condition: "new",
         image: '/images/M3 pro.png',
+        images: [
+          '/images/M3 pro.png',
+          '/images/M3 pro (2).jpg',
+          '/images/M3 pro (3).jpg'
+        ],
         rating: 4.8,
         specs: {
           processor: "Apple M3",
@@ -222,7 +287,7 @@ const Products = () => {
       },
       {
         id: 5,
-        name: "Dell latitude 5420",
+        name: "Dell latitude 5420 (Refurbished)",
         brand: "Dell",
         model: "5420",
         description: "15.6-inch 360Hz display, Intel Core i7, 11th gen, 16GB RAM, 512GB SSD, with Touchpad",
@@ -244,7 +309,7 @@ const Products = () => {
       },
       {
         id: 6,
-        name: "Lenovo L460",
+        name: "Lenovo L460 (Refurbished)",
         brand: "Lenovo",
         model: "L460",
         description: "15.6-inch 360Hz display, Intel Core i5, 6th gen, 8GB RAM, 512GB SSD",
@@ -266,7 +331,7 @@ const Products = () => {
       },
       {
         id: 7,
-        name: "Lenovo X1 Yoga",
+        name: "Lenovo X1 Yoga (Refurbished)",
         brand: "Lenovo",
         model: "X1 Yoga",
         description: "14-inch 360Hz display, Intel Core i7, 8th gen, 16GB RAM, 256GB NVMe SSD",
@@ -288,15 +353,21 @@ const Products = () => {
       },
       {
         id: 8,
-        name: "Lenovo X1 Carbon",
+        name: "Lenovo X1 Carbon (Refurbished)",
         brand: "Lenovo",
         model: "X1 Carbon",
-        description: "14-inch 360Hz display, Intel Core i7, 8th gen, 16GB RAM, 256GB NVMe SSD",
-        price: 22500,
+        description: "14-inch 360Hz display, Intel Core i7, 7th gen, 16GB RAM, 256GB NVMe SSD",
+        price: 13000,
         category: "laptops",
         condition: "new",
         image: '/images/X1 carbon.jpg',
         rating: 4.9,
+        configOptions: {
+          processor: [
+            { value: 'i7', label: 'Intel Core i7 7th Gen', },
+            { value: 'i7', label: 'Intel Core i7 8th Gen', price: 1000 }
+          ]
+        },
         specs: {
           processor: "Intel Core i7",
           ram: "16GB RAM",
@@ -310,14 +381,19 @@ const Products = () => {
       },
       {
         id: 9,
-        name: "Dell Latitude 3420",
+        name: "Dell Latitude 3420 (Refurbished)",
         brand: "Dell",
         model: "Latitude 3420",
         description: "14-inch 360Hz display, Intel Core i5, 11th gen, 8GB RAM, 256GB SSD",
         price: 18000,
         category: "laptops",
         condition: "new",
-        image: '/images/Dell 3420.jpg',
+        image: '/images/Dell 3420 (1).jpg',
+        images: [
+          '/images/Dell 3420 (1).jpg',
+          '/images/Dell 3420 (2).jpg',
+          '/images/Dell 3420 (3).png',
+        ],
         rating: 4.9,
         specs: {
           processor: "Intel Core i5",
@@ -332,7 +408,7 @@ const Products = () => {
       },
       {
         id: 10,
-        name: "HP EliteBook 440 G8",
+        name: "HP EliteBook 440 G8 (Refurbished)",
         brand: "HP",
         model: "EliteBook 440 G8",
         description: "14-inch 360Hz display, Intel Core i5, 11th gen, 8GB RAM, 256GB NVMe SSD",
@@ -354,7 +430,7 @@ const Products = () => {
       },
       {
         id: 11,
-        name: "HP Pavilion 15",
+        name: "HP Pavilion 15 (Refurbished)",
         brand: "HP",
         model: "Pavilion 15",
         description: "15.6-inch 360Hz display, Intel Core i5, 7th gen, 16GB RAM, 512GB SSD, Backlit Keyboard",
@@ -439,7 +515,319 @@ const Products = () => {
           weight: "4.3 pounds",
           color: "Obsidian Black"
         }
-      }
+      },
+      {
+        id: 15,
+        name: "Apple MacBook M2 Pro",
+        brand: "Apple",
+        model: "M2 Pro",
+        description: "16-inch Retina display, M2 Pro chip, 32GB RAM, 512GB SSD",
+        price: 82000,
+        category: "laptops",
+        condition: "new",
+        image: '/images/m2 pro (1).jpg',
+        images: [
+          '/images/m2 pro (1).jpg',
+          '/images/m2 pro (2).jpg',
+          '/images/m2 pro (3).jpg',
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Apple M2 Pro",
+          ram: "32GB Unified Memory",
+          storage: "512GB SSD",
+          display: "16-inch Retina display",
+          graphics: "12-Core CPU + 19-Core GPU",
+          battery: "Up to 18 hours",
+          weight: "2.8 pounds",
+          color: "Space Gray"
+        }
+      },
+      {
+        id: 16,
+        name: "Apple MacBook Pro A2251",
+        brand: "Apple",
+        model: "Pro A2251",
+        description: "13.3-inch Retina display, 16GB RAM, 512GB SSD",
+        price: 33000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/A2251 (1).png',
+        images: [
+          '/images/A2251 (2).jpg',
+          '/images/A2251 (3).jpg',
+          '/images/A2251 (4).jpg',
+          '/images/A2251 (5).jpg'
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Intel Core i5-1038NG7 , Intel Core i7-1068NG7	",
+          ram: "16GB Unified Memory",
+          storage: "512GB SSD",
+          display: "13.3-inch Retina display",
+          graphics: "12-Core CPU + 19-Core GPU",
+          battery: "Up to 18 hours",
+          weight: "2.8 pounds",
+          color: "Space Gray"
+        }
+      },
+      {
+        id: 17,
+        name: "Dell Latitude 3510",
+        brand: "Dell",
+        model: "Latitude 3510",
+        description: "15.6-inch Retina display, 16GB RAM, 512GB SSD",
+        price: 14500,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 3510 (1).jpg',
+        images: [
+          '/images/Dell 3510 (1).jpg',
+          '/images/Dell 3510 (2).jpg',
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Intel Core i5-10210U (4C/8T, up to 4.2GHz)",
+          ram: "4GB / 8GB / 16GB DDR4, 2666MHz (upgradeable up to 32GB)",
+          storage: "256GB / 512GB / 1TB SSD (PCIe NVMe)",
+          display: "15.6 Anti-glare LED-backlit screen",
+          graphics: "Integrated Intel UHD Graphics (i3) / Intel Iris Plus (i5/i7 variants)",
+          battery: "Up to 18 hours",
+          weight: "Approx. 1.91 kg (4.2 lbs)",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 18,
+        name: "Dell Latitude 3520",
+        brand: "Dell",
+        model: "Latitude 3520",
+        description: "15.6-inch Retina display, 8GB RAM, 256GB SSD",
+        price: 15500,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 3520 (1).jpg',
+        images: [
+          '/images/Dell 3520 (1).jpg',
+          '/images/Dell 3520 (3).jpg',
+          '/images/Dell 3520 (4).jpg',
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Intel Core i5-10210U (4C/8T, up to 4.2GHz)",
+          ram: "4GB / 8GB / 16GB DDR4, 2666MHz (upgradeable up to 32GB)",
+          storage: "256GB / 512GB / 1TB SSD (PCIe NVMe)",
+          display: "15.6 Anti-glare LED-backlit screen",
+          graphics: "Integrated Intel UHD Graphics (i3) / Intel Iris Plus (i5/i7 variants)",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 19,
+        name: "Dell Latitude 3410",
+        brand: "Dell",
+        model: "Latitude 3410",
+        description: "15.6-inch Retina display, 8GB RAM, 256GB SSD",
+        price: 14000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 3410 (1).jpg',
+        images: [
+          '/images/Dell 3410 (1).jpg',
+          '/images/Dell 3410 (2).jpg',
+          '/images/Dell 3410 (4).jpg',
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Intel Core i5-10210U (4C/8T, up to 4.2GHz)",
+          ram: "4GB / 8GB / 16GB DDR4, 2666MHz (upgradeable up to 32GB)",
+          storage: "256GB / 512GB / 1TB SSD (PCIe NVMe)",
+          display: "14-inch FHD display",
+          graphics: "Integrated Intel UHD Graphics (i3) / Intel Iris Plus (i5/i7 variants)",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 20,
+        name: "Dell Latitude 7410",
+        brand: "Dell",
+        model: "Latitude 7410",
+        description: "15.6-inch Retina display, 8GB RAM, 256GB SSD",
+        price: 17000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 7410 (1).jpg',
+        images: [
+          '/images/Dell 7410 (1).jpg',
+          '/images/Dell 7410 (2).jpg',
+          '/images/Dell 7410 (3).jpg',
+        ],
+        rating: 4.7,
+        specs: {
+          processor: "Intel Core i7-1068NG7",
+          ram: "8GB / 16GB DDR4, 2666MHz (upgradeable up to 32GB)",
+          storage: "256GB / 512GB / 1TB SSD (PCIe NVMe)",
+          display: "15.6-inch Retina display",
+          graphics: "Intel UHD integrated graphics",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 21,
+        name: "Dell Latitude 3400",
+        brand: "Dell",
+        model: "Latitude 3400",
+        description: "15.6-inch Retina display, 8GB RAM, 256GB SSD",
+        price: 11500,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 3400 (1).jpg',
+        images: [
+          '/images/Dell 3400 (1).jpg',
+          '/images/Dell 3400 (2).jpg',
+          '/images/Dell 3400 (3).png',
+        ],
+        rating: 4,
+        configOptions: {
+          processor: [
+            { value: 'i5', label: 'Intel Core i5 8th Gen', },
+            { value: 'i7', label: 'Intel Core i7 8th Gen', price: 1000 }
+          ]
+        },
+        specs: {
+          processor: "Intel Core i5 - 8th Gen",
+          ram: "8GB / 16GB DDR4, 2666MHz (upgradeable up to 32GB)",
+          storage: "256GB / 512GB / 1TB SSD (PCIe NVMe)",
+          display: "15.6-inch Retina display",
+          graphics: "Intel UHD integrated graphics",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 21,
+        name: "Dell Latitude 3301",
+        brand: "Dell",
+        model: "Latitude 3301",
+        description: "13.3-inch Full HD display, 8GB RAM, 256GB SSD",
+        price: 12000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Dell 3301 (3).jpg',
+        images: [
+          '/images/Dell 3301 (1).jpg',
+          '/images/Dell 3301 (2).jpg',
+          '/images/Dell 3301 (3).jpg',
+          '/images/Dell 3301 (4).jpg',
+        ],
+        rating: 4,
+        configOptions: {
+          processor: [
+            { value: 'i5', label: 'Intel Core i5 8th Gen', },
+            { value: 'i7', label: 'Intel Core i7 8th Gen', price: 1000 }
+          ]
+        },
+        specs: {
+          processor: "Intel Core i5 - 8th Gen",
+          ram: "8GB",
+          storage: "256GB SSD",
+          display: "13.3-inch Full HD display",
+          graphics: "Intel UHD 620",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 22,
+        name: "Lenovo X1",
+        brand: "Lenovo",
+        model: "X1",
+        description: "14-inch Full HD display, 8GB RAM, 256GB SSD",
+        price: 16000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Lenovo x1 (1).jpeg',
+        images: [
+          '/images/Lenovo x1 (1).jpeg',
+          '/images/Lenovo x1 (2).jpg',
+          '/images/Lenovo x1 (3).jpg',
+        ],
+        rating: 4,
+        specs: {
+          processor: "Intel Core i7 - 10th Gen",
+          ram: "8GB",
+          storage: "256GB SSD",
+          display: "14-inch IPS display",
+          graphics: "Intel UHD 620",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 23,
+        name: "Lenovo P14 S Touch Screen",
+        brand: "Lenovo",
+        model: "P14 S",
+        description: "14-inch QHD 4K display, 8GB RAM, 256GB SSD",
+        price: 17500,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Lenovo p14.jpg',
+        images: [
+          '/images/Lenovo p14.jpg',
+          '/images/Lenovo p14 (2).jpg',
+          '/images/Lenovo p14 (3).jpg',
+          '/images/Lenovo p14 (4).jpg',
+        ],
+        rating: 4,
+        specs: {
+          processor: "Intel Core i7 - 10th Gen",
+          ram: "8GB",
+          storage: "256GB SSD",
+          display: "FHD (14″), QHD 4K",
+          graphics: "Intel UHD 620",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
+      {
+        id: 24,
+        name: "Lenovo P43 S",
+        brand: "Lenovo",
+        model: "P43 S",
+        description: "14-inch FHD display, 8GB RAM, 256GB SSD",
+        price: 15000,
+        category: "laptops",
+        condition: "used",
+        image: '/images/Lenovo p43 (1).jpg',
+        images: [
+          '/images/Lenovo p43 (1).jpg',
+          '/images/Lenovo p43 (2).jpg',
+          '/images/Lenovo p43 (3).jpg',
+          '/images/Lenovo p43 (4).jpg',
+        ],
+        rating: 4,
+        specs: {
+          processor: "Intel Core i7 - 8th Gen",
+          ram: "8GB",
+          storage: "256GB SSD",
+          display: "FHD (14″), QHD 4K",
+          graphics: "Intel UHD 620",
+          battery: "Up to 18 hours",
+          weight: "~1.78–1.79 kg (3.92 lb) with adapter ≈310 g",
+          color: "Dark Gray / Black matte textured finish"
+        }
+      },
     ],
     desktops: [
       // Add desktop products here
@@ -447,13 +835,13 @@ const Products = () => {
     accessories: [
       // Add accessories here
     ]
-  };
+}
 
-  // Get all products from all categories
-  const allProducts = Object.values(productsByCategory).flat();
+// Get all products from all categories
+const allProducts = Object.values(productsByCategory).flat();
 
-  // Get search term from URL parameters
-  useEffect(() => {
+// Get search term from URL parameters
+useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const search = searchParams.get('search');
     if (search) {
@@ -526,7 +914,7 @@ const Products = () => {
           marginRight: '-50vw',
           zIndex: 2
         }}>
-          🎉 Today’s Deal: <span style={{ color: '#10b981', margin: '0 8px', fontWeight: 700 }}>Up to 20% OFF</span> on select laptops! &nbsp; | &nbsp; <span style={{ color: '#2563eb' }}>Free Shipping</span> on orders over ₹25,000
+          🎉 Today’s Deal: <span style={{ color: '#10b981', margin: '0 8px', fontWeight: 700 }}>Up to 20% OFF</span> on select laptops! &nbsp; | &nbsp; <span style={{ color: '#2563eb' }}>Free Shipping </span>  on orders over ₹25,000
         </Box>
       )}
 
@@ -716,23 +1104,40 @@ const Products = () => {
             aria-label="Search products"
           />
           {searchSuggestions.length > 0 && (
-            <Paper
-              id="search-suggestion-list"
-              sx={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                width: '100%',
-                zIndex: 10,
-                mt: 1,
-                borderRadius: 3,
-                boxShadow: 4,
-                maxHeight: 320,
-                overflowY: 'auto',
-              }}
-              role="listbox"
-            >
-              {searchSuggestions.map((suggestion, idx) => {
+  <Paper
+    id="search-suggestion-list"
+    sx={{
+      position: 'absolute',
+      top: '100%',
+      left: 0,
+      width: '100%',
+      zIndex: 50, // Higher zIndex to prevent overlap
+      mt: 1,
+      borderRadius: 3,
+      boxShadow: 6,
+      maxHeight: 320,
+      overflowY: 'auto',
+      background: '#fff',
+      border: '1px solid #cfd8dc',
+      pointerEvents: 'auto',
+    }}
+    role="listbox"
+  >
+    {/* Filter duplicates and sort by relevance */}
+    {[...new Map(searchSuggestions.map(s => [s.id || s.name, s])).values()]
+      .sort((a, b) => {
+        // Prioritize exact match, then startsWith, then includes
+        const st = searchTerm.toLowerCase();
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        if (aName === st && bName !== st) return -1;
+        if (bName === st && aName !== st) return 1;
+        if (aName.startsWith(st) && !bName.startsWith(st)) return -1;
+        if (bName.startsWith(st) && !aName.startsWith(st)) return 1;
+        return aName.localeCompare(bName);
+      })
+      .slice(0, 7)
+      .map((suggestion, idx) => {
                 const highlight = (text) => {
                   if (!text || typeof text !== 'string' || !searchTerm || typeof searchTerm !== 'string') return text;
                   if (!text || typeof text !== 'string' || !searchTerm || typeof searchTerm !== 'string') return text;
@@ -747,26 +1152,27 @@ const Products = () => {
                 const product = allProducts.find(p => p.name === (suggestion.name || suggestion));
                 return (
                   <Box
-                    key={suggestion.id || suggestion}
-                    role="option"
-                    sx={{
-                      px: 2,
-                      py: 1.2,
-                      mb: 0.5,
-                      cursor: 'pointer',
-                      background: 'transparent',
-                      borderRadius: 2,
-                      transition: 'background 0.2s',
-                      '&:hover': { background: '#f0f4fa' },
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                    onMouseDown={e => {
-                      e.preventDefault();
-                      setSearchTerm(suggestion.name || suggestion);
-                      setSearchSuggestions([]);
-                    }}
-                  >
+        key={suggestion.id ? `sugg-${suggestion.id}` : `sugg-${idx}`}
+        role="option"
+        sx={{
+          px: 2,
+          py: 1.2,
+          mb: 0.5,
+          cursor: 'pointer',
+          background: 'transparent',
+          borderRadius: 2,
+          transition: 'background 0.2s',
+          '&:hover': { background: '#f0f4fa' },
+          display: 'flex',
+          alignItems: 'center',
+          minHeight: 44,
+        }}
+        onMouseDown={e => {
+          e.preventDefault();
+          setSearchTerm(suggestion.name || suggestion);
+          setSearchSuggestions([]);
+        }}
+      >
                     <SearchIcon sx={{ fontSize: 20, color: '#2563eb', mr: 1.2 }} />
                     <Box>
                       <Typography
@@ -803,22 +1209,113 @@ const Products = () => {
           </Select>
         </FormControl>
 
+        {category === 'laptops' && (
+          <>
+            {/* Brandwise Category Filter */}
+            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+              <Button
+                variant={selectedBrand === 'all' ? 'contained' : 'outlined'}
+                color="primary"
+                onClick={() => setSelectedBrand('all')}
+                sx={{ fontWeight: 600 }}
+              >
+                All Brands
+              </Button>
+              {Array.from(new Set(productsByCategory.laptops.map(l => l.brand))).map(brand => (
+                <Button
+                  key={brand}
+                  variant={selectedBrand === brand ? 'contained' : 'outlined'}
+                  color="primary"
+                  onClick={() => setSelectedBrand(brand)}
+                  sx={{ fontWeight: 600 }}
+                >
+                  {brand}
+                </Button>
+              ))}
+            </Box>
+          </>
+        )}
         {category === 'laptops' ? (
-          <Fade in={true} timeout={1500}>
-            <Grid container spacing={3}>
+          <>
+            <Fade in={true} timeout={1500}>
+              <Grid container spacing={3}>
+                {conditionFilteredProducts
+                  .filter(product => selectedBrand === 'all' || product.brand === selectedBrand)
+                  .map((product) => (
+                    <Grid item xs={12} sm={6} md={4} key={product.id}>
+                      <StyledCard sx={{
+                        background: '#fff',
+                        borderRadius: 3,
+                        boxShadow: '0 2px 16px 0 rgba(36,81,171,0.06)',
+                        transition: 'box-shadow 0.2s, transform 0.2s',
+                        '&:hover': {
+                          boxShadow: '0 4px 24px 0 #2563eb22',
+                          transform: 'translateY(-4px) scale(1.02)',
+                          borderColor: '#2563eb44',
+                        },
+                      }}>
+                        <CardMedia
+                          component="img"
+                          height="200"
+                          image={product.image}
+                          alt={product.name}
+                          sx={{
+                            objectFit: 'contain',
+                            borderRadius: '8px',
+                            background: '#f5f7fa',
+                            '&:hover': { opacity: 0.93 }
+                          }}
+                          onError={(e) => {
+                            const img = e.target;
+                            img.src = '/images/default-product.jpg';
+                          }}
+                        />
+                        <StyledCardContent>
+                          <Typography variant="h6" gutterBottom sx={{ color: '#17436b', fontWeight: 700 }}>
+                            {product.name}
+                          </Typography>
+                          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                            {product.brand} {product.model}
+                          </Typography>
+                          <Typography variant="h6" color="primary" gutterBottom>
+                            {formatPrice(product.price)}
+                          </Typography>
+                          <Rating value={product.rating} readOnly precision={0.5} />
+                          <StyledButtonGroup>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              fullWidth
+                              sx={{ borderRadius: 2 }}
+                              onClick={() => {
+                                setSelectedProduct(product);
+                                setOpenDetails(true);
+                              }}
+                            >
+                              View Details
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              startIcon={<ShoppingCartIcon />}
+                              sx={{ borderRadius: 2 }}
+                              onClick={() => addToCart(product)}
+                            >
+                              Add to Cart
+                            </Button>
+                          </StyledButtonGroup>
+                        </StyledCardContent>
+                      </StyledCard>
+                    </Grid>
+                  ))}
+              </Grid>
+            </Fade>
+          </>
+        ) : (
+          <Grid container spacing={3}>
               {conditionFilteredProducts.map((product) => (
                 <Grid item xs={12} sm={6} md={4} key={product.id}>
-                  <StyledCard sx={{
-                    background: '#fff',
-                    borderRadius: 3,
-                    boxShadow: '0 2px 16px 0 rgba(36,81,171,0.06)',
-                    transition: 'box-shadow 0.2s, transform 0.2s',
-                    '&:hover': {
-                      boxShadow: '0 4px 24px 0 #2563eb22',
-                      transform: 'translateY(-4px) scale(1.02)',
-                      borderColor: '#2563eb44',
-                    },
-                  }}>
+                  <StyledCard>
                     <CardMedia
                       component="img"
                       height="200"
@@ -827,8 +1324,9 @@ const Products = () => {
                       sx={{
                         objectFit: 'contain',
                         borderRadius: '8px',
-                        background: '#f5f7fa',
-                        '&:hover': { opacity: 0.93 }
+                        '&:hover': {
+                          opacity: 0.9
+                        }
                       }}
                       onError={(e) => {
                         const img = e.target;
@@ -836,7 +1334,7 @@ const Products = () => {
                       }}
                     />
                     <StyledCardContent>
-                      <Typography variant="h6" gutterBottom sx={{ color: '#17436b', fontWeight: 700 }}>
+                      <Typography variant="h6" gutterBottom>
                         {product.name}
                       </Typography>
                       <Typography variant="subtitle1" color="text.secondary" gutterBottom>
@@ -851,7 +1349,6 @@ const Products = () => {
                           variant="contained"
                           color="primary"
                           fullWidth
-                          sx={{ borderRadius: 2 }}
                           onClick={() => {
                             setSelectedProduct(product);
                             setOpenDetails(true);
@@ -863,7 +1360,6 @@ const Products = () => {
                           variant="outlined"
                           color="primary"
                           startIcon={<ShoppingCartIcon />}
-                          sx={{ borderRadius: 2 }}
                           onClick={() => addToCart(product)}
                         >
                           Add to Cart
@@ -874,158 +1370,193 @@ const Products = () => {
                 </Grid>
               ))}
             </Grid>
-          </Fade>
-        ) : (
-          <Grid container spacing={3}>
-            {conditionFilteredProducts.map((product) => (
-              <Grid item xs={12} sm={6} md={4} key={product.id}>
-                <StyledCard>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={product.image}
-                    alt={product.name}
-                    sx={{
-                      objectFit: 'contain',
-                      borderRadius: '8px',
-                      '&:hover': {
-                        opacity: 0.9
-                      }
-                    }}
-                    onError={(e) => {
-                      const img = e.target;
-                      img.src = '/images/default-product.jpg';
-                    }}
-                  />
-                  <StyledCardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {product.name}
+          )}
+        </Container>
+
+        {conditionFilteredProducts.length === 0 && (
+          <Typography variant="h6" color="text.secondary" align="center" sx={{ mt: 4 }}>
+            No products found matching your criteria
+          </Typography>
+        )}
+
+        <StyledDialog open={openDetails} onClose={() => setOpenDetails(false)} fullScreen>
+          <StyledDialogTitle>
+            Product Details
+            <IconButton
+              onClick={() => setOpenDetails(false)}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </StyledDialogTitle>
+          <StyledDialogContent>
+            {selectedProduct && (
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 4 }}>
+                  <Box>
+                    {/* Product Images Gallery */}
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 3 }}>
+                      {(selectedProduct.images && selectedProduct.images.length > 0
+                        ? selectedProduct.images
+                        : [selectedProduct.image]
+                      ).map((img, idx) => (
+                        <CardMedia
+                          key={idx}
+                          component="img"
+                          image={img}
+                          alt={selectedProduct.name + ' ' + (idx + 1)}
+                          sx={{
+                            width: 180,
+                            height: 130,
+                            borderRadius: '10px',
+                            objectFit: 'contain',
+                            background: '#fff',
+                            boxShadow: 2,
+                            border: '1px solid #e0e0e0',
+                            mr: 2
+                          }}
+                          onError={e => { e.target.src = '/images/default-product.jpg'; }}
+                        />
+                      ))}
+                    </Box>
+                    <Typography variant="h5" gutterBottom>
+                      {selectedProduct.name}
                     </Typography>
                     <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                      {product.brand} {product.model}
+                      {selectedProduct.brand} {selectedProduct.model}
                     </Typography>
                     <Typography variant="h6" color="primary" gutterBottom>
-                      {formatPrice(product.price)}
+  {selectedProduct.configOptions
+    ? formatPrice(
+        (selectedProduct.price || 0)
+        + (selectedProduct.configOptions.ram && selectedProduct.configOptions.ram.length > 0
+            ? (selectedProduct.configOptions.ram.find(opt => opt.value === (configSelections[selectedProduct.id]?.ram || selectedProduct.configOptions.ram[0]?.value))?.price || 0)
+            : 0)
+        + (selectedProduct.configOptions.storage && selectedProduct.configOptions.storage.length > 0
+            ? (selectedProduct.configOptions.storage.find(opt => opt.value === (configSelections[selectedProduct.id]?.storage || selectedProduct.configOptions.storage[0]?.value))?.price || 0)
+            : 0)
+        + (selectedProduct.configOptions.processor && selectedProduct.configOptions.processor.length > 0
+            ? (selectedProduct.configOptions.processor.find(opt => opt.value === (configSelections[selectedProduct.id]?.processor || selectedProduct.configOptions.processor[0]?.value))?.price || 0)
+            : 0)
+      )
+    : formatPrice(selectedProduct.price)
+  }
+</Typography>
+                    <Rating value={selectedProduct.rating} readOnly precision={0.5} />
+                    <Typography variant="body1" paragraph sx={{ mb: 4 }}>
+                      {selectedProduct.description}
                     </Typography>
-                    <Rating value={product.rating} readOnly precision={0.5} />
-                    <StyledButtonGroup>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          setOpenDetails(true);
-                        }}
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<ShoppingCartIcon />}
-                        onClick={() => addToCart(product)}
-                      >
-                        Add to Cart
-                      </Button>
-                    </StyledButtonGroup>
-                  </StyledCardContent>
-                </StyledCard>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Container>
-
-      {conditionFilteredProducts.length === 0 && (
-        <Typography variant="h6" color="text.secondary" align="center" sx={{ mt: 4 }}>
-          No products found matching your criteria
-        </Typography>
-      )}
-
-      <StyledDialog open={openDetails} onClose={() => setOpenDetails(false)}>
-        <StyledDialogTitle>
-          Product Details
-          <IconButton
-            onClick={() => setOpenDetails(false)}
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </StyledDialogTitle>
-        <StyledDialogContent>
-          {selectedProduct && (
-            <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 4 }}>
-                <Box>
-                  <Typography variant="h5" gutterBottom>
-                    {selectedProduct.name}
-                  </Typography>
-                  <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                    {selectedProduct.brand} {selectedProduct.model}
-                  </Typography>
-                  <Typography variant="h6" color="primary" gutterBottom>
-                    {formatPrice(selectedProduct.price)}
-                  </Typography>
-                  <Rating value={selectedProduct.rating} readOnly precision={0.5} />
+                    <Typography variant="h6" gutterBottom>
+                      Specifications
+                    </Typography>
+                    {selectedProduct.configOptions && (
+  <>
+    {selectedProduct.configOptions.ram && selectedProduct.configOptions.ram.length > 0 && (
+      <FormControl fullWidth size="small" sx={{ mt: 1, mb: 1 }}>
+        <InputLabel>RAM</InputLabel>
+        <Select
+          value={(configSelections[selectedProduct.id]?.ram) || selectedProduct.configOptions.ram[0]?.value}
+          label="RAM"
+          onChange={e => handleConfigChange(selectedProduct.id, 'ram', e.target.value)}
+        >
+          {selectedProduct.configOptions.ram.map(opt => (
+            <MenuItem key={opt.value} value={opt.value}>{opt.label} {opt.price ? `(+₹${opt.price})` : ''}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )}
+    {selectedProduct.configOptions.storage && selectedProduct.configOptions.storage.length > 0 && (
+      <FormControl fullWidth size="small" sx={{ mb: 1 }}>
+        <InputLabel>Storage</InputLabel>
+        <Select
+          value={(configSelections[selectedProduct.id]?.storage) || selectedProduct.configOptions.storage[0]?.value}
+          label="Storage"
+          onChange={e => handleConfigChange(selectedProduct.id, 'storage', e.target.value)}
+        >
+          {selectedProduct.configOptions.storage.map(opt => (
+            <MenuItem key={opt.value} value={opt.value}>{opt.label} {opt.price ? `(+₹${opt.price})` : ''}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )}
+    {selectedProduct.configOptions.processor && selectedProduct.configOptions.processor.length > 0 && (
+      <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+        <InputLabel>Processor</InputLabel>
+        <Select
+          value={(configSelections[selectedProduct.id]?.processor) || selectedProduct.configOptions.processor[0]?.value}
+          label="Processor"
+          onChange={e => handleConfigChange(selectedProduct.id, 'processor', e.target.value)}
+        >
+          {selectedProduct.configOptions.processor.map(opt => (
+            <MenuItem key={opt.value} value={opt.value}>{opt.label} {opt.price ? `(+₹${opt.price})` : ''}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )}
+  </>
+)}
+<StyledSpecsList>
+  {Object.entries(selectedProduct.specs).map(([key, value]) => (
+    <ListItem key={key}>
+      <ListItemText
+        primary={key.replace(/([A-Z])/g, ' $1').trim()}
+        secondary={value}
+      />
+    </ListItem>
+  ))}
+</StyledSpecsList>
+                  </Box>
+                  {/* ... (the images/magnifier column stays as is) ... */}
                 </Box>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  sx={{
-                    width: 200,
-                    borderRadius: '8px',
-                    objectFit: 'contain',
-                    ml: 4,
-                    boxShadow: 2,
-                    transition: 'transform 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.05)'
-                    }
-                  }}
-                  onError={(e) => {
-                    const img = e.target;
-                    img.src = '/images/default-product.jpg';
-                  }}
-                />
               </Box>
-              <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-                {selectedProduct.description}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                Specifications
-              </Typography>
-              <StyledSpecsList>
-                {Object.entries(selectedProduct.specs).map(([key, value]) => (
-                  <ListItem key={key}>
-                    <ListItemText
-                      primary={key.replace(/([A-Z])/g, ' $1').trim()}
-                      secondary={value}
-                    />
-                  </ListItem>
-                ))}
-              </StyledSpecsList>
-            </Box>
-          )}
-        </StyledDialogContent>
-        <StyledDialogActions>
-          <Button onClick={() => setOpenDetails(false)}>Close</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              addToCart(selectedProduct);
-              setOpenDetails(false);
-            }}
-          >
-            Add to Cart
-          </Button>
-        </StyledDialogActions>
-      </StyledDialog>
-    </Box>
-  );
-};
+            )}
+          </StyledDialogContent>
+          <StyledDialogActions>
+            <Button onClick={() => setOpenDetails(false)}>Close</Button>
+            <Button
+  variant="contained"
+  color="primary"
+  onClick={() => {
+    if (selectedProduct.configOptions) {
+      const config = {
+        ram: selectedProduct.configOptions.ram && selectedProduct.configOptions.ram.length > 0
+          ? (configSelections[selectedProduct.id]?.ram || selectedProduct.configOptions.ram[0]?.value)
+          : undefined,
+        storage: selectedProduct.configOptions.storage && selectedProduct.configOptions.storage.length > 0
+          ? (configSelections[selectedProduct.id]?.storage || selectedProduct.configOptions.storage[0]?.value)
+          : undefined,
+        processor: selectedProduct.configOptions.processor && selectedProduct.configOptions.processor.length > 0
+          ? (configSelections[selectedProduct.id]?.processor || selectedProduct.configOptions.processor[0]?.value)
+          : undefined,
+      };
+      const price =
+        (selectedProduct.price || 0)
+        + (selectedProduct.configOptions.ram && selectedProduct.configOptions.ram.length > 0
+            ? (selectedProduct.configOptions.ram.find(opt => opt.value === config.ram)?.price || 0)
+            : 0)
+        + (selectedProduct.configOptions.storage && selectedProduct.configOptions.storage.length > 0
+            ? (selectedProduct.configOptions.storage.find(opt => opt.value === config.storage)?.price || 0)
+            : 0)
+        + (selectedProduct.configOptions.processor && selectedProduct.configOptions.processor.length > 0
+            ? (selectedProduct.configOptions.processor.find(opt => opt.value === config.processor)?.price || 0)
+            : 0);
+      addToCart({
+        ...selectedProduct,
+        selectedConfig: config,
+        price,
+      });
+    } else {
+      addToCart(selectedProduct);
+    }
+    setOpenDetails(false);
+  }}
+>
+  Add to Cart
+</Button>
+          </StyledDialogActions>
+        </StyledDialog>
+      </Box>
+    );
+  };
 
-export default Products;
+  export default Products;

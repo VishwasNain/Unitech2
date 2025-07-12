@@ -188,33 +188,86 @@ const Home = () => {
   const featuredProducts = [
     {
       id: 1,
-      name: 'HP Pavilion 15',
-      price: 59999,
-      image: 'https://rukminim2.flixcart.com/image/416/416/xif0q/computer/g/n/e/-original-imagz5yq7zqgk9jz.jpeg',
+      name: "Apple MacBook Air M4 14inch (Refurbished)",
+      brand: "Apple",
+      model: "M4 Air",
+      description: "14-inch Retina display, M4 chip, 16GB RAM, 256GB SSD",
+      price: 82000,
+      category: "laptops",
+      condition: "new",
+      image: '/images/Apple m4 air.jpeg',
+      images: [
+        '/images/Apple m4 air.jpeg',
+        '/images/M4 air (2).jpg',
+        '/images/M4 air (3).jpg',
+        '/images/M4 air (4).jpg',
+      ],
+      rating: 4.7,
+      specs: {
+        processor: "Apple M4",
+        ram: "16GB Unified Memory",
+        storage: "256GB SSD",
+        display: "14-inch Retina display",
+        graphics: "Apple M4 graphics",
+        battery: "Up to 18 hours",
+        weight: "2.8 pounds",
+        color: "Space Gray"
+      }
     },
     {
       id: 2,
-      name: 'Dell Inspiron 14',
-      price: 54999,
-      image: 'https://rukminim2.flixcart.com/image/416/416/xif0q/computer/8/2/l/-original-imagz5yq7zqgk9jz.jpeg',
+      name: "Apple MacBook pro M1 (2021) (Refurbished)",
+      brand: "Apple",
+      model: "M1 Pro",
+      description: "16-inch Retina display, M1 chip, 32GB RAM, 512GB SSD",
+      price: 84000,
+      category: "laptops",
+      condition: "new,used",
+      image: '/images/m1 pro 16inch.jpg',
+      images: [
+        '/images/m1 pro 16inch.jpg',
+        '/images/M1 pro (3).jpg',
+      ],
+      rating: 4.8,
+      specs: {
+        processor: "Apple M1",
+        ram: "32GB RAM",
+        storage: "512GB SSD",
+        display: "16-inch Retina display",
+        graphics: "Apple M1 graphics",
+        battery: "Up to 21 hours",
+        weight: "3.5 pounds",
+        color: "Silver"
+      }
     },
     {
       id: 3,
-      name: 'Lenovo IdeaPad Slim',
-      price: 47999,
-      image: 'https://rukminim2.flixcart.com/image/416/416/xif0q/computer/9/9/9/-original-imagz5yq7zqgk9jz.jpeg',
-    },
-    {
-      id: 4,
-      name: 'Apple MacBook Air',
-      price: 99999,
-      image: 'https://rukminim2.flixcart.com/image/416/416/xif0q/computer/1/2/3/-original-imagz5yq7zqgk9jz.jpeg',
+      name: "Apple MacBook M3 Pro (Refurbished)",
+      brand: "Apple",
+      model: "M3 Pro",
+      description: "16-inch Retina display, M3 chip, 18GB RAM, 512GB SSD",
+      price: 84000,
+      category: "laptops",
+      condition: "new",
+      image: '/images/M3 pro.png',
+      images: [
+        '/images/M3 pro.png',
+        '/images/M3 pro (2).jpg',
+        '/images/M3 pro (3).jpg'
+      ],
+      rating: 4.8,
+      specs: {
+        processor: "Apple M3",
+        ram: "18GB RAM",
+        storage: "512GB SSD",
+        display: "16-inch Retina display",
+        graphics: "Apple M3 graphics",
+        battery: "Up to 21 hours",
+        weight: "3.5 pounds",
+        color: "Silver"
+      }
     },
   ];
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const visibleCards = 3;
-  const handleCarouselLeft = () => setCarouselIndex(i => Math.max(0, i - 1));
-  const handleCarouselRight = () => setCarouselIndex(i => Math.min(featuredProducts.length - visibleCards, i + 1));
 
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
@@ -249,7 +302,9 @@ const Home = () => {
                 Welcome to Unitech Computers
               </GradientText>
               <Typography variant="h2" color="text.secondary" paragraph>
-                Discover the latest in technology
+              Next-Gen Tech.
+              Half the Price.
+
               </Typography>
               <TextField
                 fullWidth
@@ -306,65 +361,34 @@ const Home = () => {
           {/* Featured Products Carousel */}
           <Container maxWidth="lg" sx={{ my: 4 }}>
             <Typography variant="h2" gutterBottom sx={{ textAlign: 'center' }}>
-              Featured Products
+              UNITECH BESTSELLERS
             </Typography>
-            <Box sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-              <IconButton
-                onClick={handleCarouselLeft}
-                disabled={carouselIndex === 0}
-                sx={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 1,
-                  background: 'white',
-                  boxShadow: 2,
-                  '&:hover': { background: '#eee' },
-                  display: { xs: 'none', sm: 'flex' }
-                }}
-              >
-                <KeyboardArrowLeft />
-              </IconButton>
-              <Box sx={{ display: 'flex', gap: 3, transition: 'all 0.5s', ml: `${-carouselIndex * (100 / visibleCards)}%` }}>
-                {featuredProducts.slice(carouselIndex, carouselIndex + visibleCards).map(product => (
-                  <Card key={product.id} sx={{ minWidth: 260, flex: '0 0 33%', boxShadow: 4, borderRadius: 3 }}>
-                    <CardMedia
-                      component="img"
-                      height="180"
-                      image={product.image}
-                      alt={product.name}
-                      sx={{ objectFit: 'cover', borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
-                    />
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom noWrap>{product.name}</Typography>
-                      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                        ₹{product.price.toLocaleString()}
-                      </Typography>
-                      <Button variant="contained" color="primary" fullWidth>
-                        View Details
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-              <IconButton
-                onClick={handleCarouselRight}
-                disabled={carouselIndex >= featuredProducts.length - visibleCards}
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 1,
-                  background: 'white',
-                  boxShadow: 2,
-                  '&:hover': { background: '#eee' },
-                  display: { xs: 'none', sm: 'flex' }
-                }}
-              >
-                <KeyboardArrowRight />
-              </IconButton>
+            <Box sx={{ width: '100%', overflowX: 'auto', display: 'flex', gap: 3, py: 2, scrollbarWidth: 'thin', '&::-webkit-scrollbar': { height: 10 }, '&::-webkit-scrollbar-thumb': { background: '#bbb', borderRadius: 5 } }}>
+              {featuredProducts.map(product => (
+                <Card key={product.id} sx={{ minWidth: 260, flex: '0 0 260px', boxShadow: 4, borderRadius: 3 }}>
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={product.image}
+                    alt={product.name}
+                    sx={{ objectFit: 'cover', borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom noWrap>{product.name}</Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                      ₹{product.price.toLocaleString()}
+                    </Typography>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      fullWidth
+                      onClick={() => navigate('/product-details', { state: product })}
+                    >
+                      View Details
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
           </Container>
         </div>
@@ -600,6 +624,8 @@ const Home = () => {
                     bgcolor: 'white',
                     borderRadius: 2,
                     width: { xs: '100%', sm: 'auto' },
+                    color: 'black',
+                    input: { color: 'black' },
                   }}
                 />
                 <Button
@@ -610,6 +636,7 @@ const Home = () => {
                   sx={{
                     minWidth: 140,
                     width: { xs: '100%', sm: 'auto' },
+                    color: 'black',
                   }}
                 >
                   Subscribe

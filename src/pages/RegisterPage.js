@@ -85,9 +85,7 @@ const RegisterPage = () => {
             align="center" 
             gutterBottom
             sx={{
-              background: 'linear-gradient(45deg, #2563eb, #10b981)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: 'black',
               fontWeight: 700,
               mb: 3,
             }}
@@ -99,7 +97,7 @@ const RegisterPage = () => {
             variant="body1" 
             align="center" 
             color="text.secondary"
-            sx={{ mb: 4, opacity: 0.9 }}
+            sx={{ mb: 4, opacity: 0.9, color: 'black' }}
           >
             Join Unitech Computers and start shopping today
           </Typography>
@@ -123,12 +121,14 @@ const RegisterPage = () => {
               fullWidth
               label="Full Name"
               name="name"
+              autoComplete="name"
               value={formData.name}
               onChange={handleChange}
               margin="normal"
               required
               autoFocus
               sx={{
+                input: { color: 'black' },
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
                     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -147,11 +147,13 @@ const RegisterPage = () => {
               label="Email Address"
               name="email"
               type="email"
+              autoComplete="email"
               value={formData.email}
               onChange={handleChange}
               margin="normal"
               required
               sx={{
+                input: { color: 'black' },
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
                     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -179,6 +181,7 @@ const RegisterPage = () => {
                 maxLength: 10,
               }}
               sx={{
+                input: { color: 'black' },
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
                     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -197,11 +200,13 @@ const RegisterPage = () => {
               label="Password"
               name="password"
               type="password"
+              autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
               margin="normal"
               required
               sx={{
+                input: { color: 'black' },
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
                     borderColor: 'rgba(0, 0, 0, 0.12)',
@@ -229,6 +234,7 @@ const RegisterPage = () => {
                 textTransform: 'none',
                 fontWeight: 600,
                 fontSize: '1rem',
+                color: 'black',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 '&:hover': {
                   boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
@@ -251,7 +257,7 @@ const RegisterPage = () => {
             <Typography 
               variant="body2" 
               color="text.secondary"
-              sx={{ opacity: 0.8 }}
+              sx={{ opacity: 0.8, color: 'black' }}
             >
               Already have an account?
             </Typography>
@@ -261,6 +267,7 @@ const RegisterPage = () => {
               sx={{
                 textDecoration: 'none',
                 fontWeight: 600,
+                color: 'black',
                 '&:hover': {
                   textDecoration: 'underline',
                 },

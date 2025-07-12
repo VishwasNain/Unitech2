@@ -79,21 +79,21 @@ const Register = () => {
     <Container maxWidth="sm">
       <Box sx={{ mt: 8, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-          <Typography component="h1" variant="h4" align="center" gutterBottom>
+          <Typography component="h1" variant="h4" align="center" gutterBottom sx={{ color: 'black' }}>
             Create Account
           </Typography>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph sx={{ color: 'black' }}>
             Get started with Unitech Computers
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 2, color: 'black' }}>
                 {error}
               </Alert>
             )}
 
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -108,7 +108,7 @@ const Register = () => {
               helperText={error && error.includes('name') ? error : ''}
             />
             
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -122,7 +122,7 @@ const Register = () => {
               helperText={error && error.includes('email') ? error : ''}
             />
             
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -147,7 +147,7 @@ const Register = () => {
               }}
             />
             
-            <TextField
+            <TextField sx={{ input: { color: 'black' } }}
               margin="normal"
               required
               fullWidth
@@ -176,7 +176,7 @@ const Register = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, color: 'black' }}
               disabled={loading || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
             >
               {loading ? (
@@ -188,9 +188,9 @@ const Register = () => {
 
             <Divider sx={{ my: 2 }} />
 
-            <Typography align="center">
+            <Typography align="center" sx={{ color: 'black' }}>
               Already have an account?{' '}
-              <Link href="/login" variant="body2">
+              <Link href="/login" variant="body2" sx={{ color: 'black' }}>
                 Sign In
               </Link>
             </Typography>
